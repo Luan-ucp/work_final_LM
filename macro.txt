@@ -1,0 +1,80 @@
+%macro mult_mat 1
+
+col_1_B:
+	mov al, [A+ecx]		
+	mov bl, [B+esi]
+	mul bl
+	add [soma], ax
+			
+	mov esi, 1		;esi vai apontar a proxima coluna de B
+	mov ecx, [ecx_inicial]	;ecx vai voltar a coluna inicial de A
+	
+	;mov ax, [soma]
+	;push ax
+	
+	mov WORD [soma], 0
+;	jmp loop
+
+col_2_B:
+	mov al, [A+ecx]		
+	mov bl, [B+esi]
+	mul bl
+	add [soma], ax
+
+	mov esi, 2
+	mov ecx, [ecx_inicial]
+	;mov ax, [soma]
+	;push ax
+	mov WORD [soma], 0
+;	jmp loop		
+
+retorna_loop:
+	
+	mov al, [A+ecx]		
+	mov bl, [B+esi]
+	mul bl
+	add [soma], ax
+	;mov ax, [soma]
+	;push ax			;adc aqui valores da soma na pilha
+
+	inc ecx				;vai para a prox linha
+	mov [ecx_inicial], ecx		;ecx_inicial passa a ter o valor incial da nova linha
+	mov esi, 0			;volta o esi à posicao inicial de B
+	mov WORD [soma], 0
+	
+
+;loop:			;loop de controle
+		
+	mov al, [A+ecx]
+	mov bl, [B+esi]
+		
+	mul bl
+	add [soma], ax
+		
+	inc ecx		;soma 1 ao contador de coluna de A
+	add esi, 3	;soma 3 ao contador de linha do B
+
+	cmp ecx, 8
+	je fim
+		
+	cmp esi, 6
+	je col_1_B	;faz o esi apontar para a proxima coluna de B
+		
+	cmp esi, 7
+	je col_2_B	;faz o esi apontar para a ultima coluna de B
+		
+	cmp esi, 8
+	je retorna_loop		
+
+;	jmp loop	;volta ao loop caso nenhuma das condições acima forem satisfeitas
+
+fim:
+	mov al, [A+ecx]		
+	mov bl, [B+esi]
+	mul bl
+	add [soma], ax
+
+	mov edx, 0
+	mov edx, [soma]
+	mov %1, edx
+%endmacro
